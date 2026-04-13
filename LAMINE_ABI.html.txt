@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ma Librairie</title>
+
+<style>
+body{
+    font-family: Arial;
+    margin:0;
+    background:#f5f5f5;
+}
+
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px;
+    background:white;
+}
+
+.logo{
+    font-weight:bold;
+}
+
+.search{
+    width:35%;
+    padding:8px;
+}
+
+/* ADMIN BUTTON */
+.admin-btn{
+    background:black;
+    color:white;
+    padding:8px 12px;
+    border:none;
+    cursor:pointer;
+    border-radius:5px;
+}
+
+.cart{
+    font-weight:bold;
+}
+
+.navbar{
+    background:white;
+    padding:10px;
+    display:flex;
+    justify-content:center;
+    gap:20px;
+}
+
+.banner{
+    background:#e8d5c4;
+    padding:20px;
+    text-align:center;
+}
+
+.section{
+    padding:20px;
+}
+
+.books{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:15px;
+}
+
+.book{
+    background:white;
+    padding:10px;
+    border-radius:10px;
+    text-align:center;
+}
+
+.book img{
+    width:100%;
+    height:200px;
+    object-fit:cover;
+}
+
+button{
+    background:#8b3a3a;
+    color:white;
+    border:none;
+    padding:8px;
+    margin:3px;
+    cursor:pointer;
+}
+
+@media(max-width:600px){
+    .search{
+        width:50%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">📚 Ma Librairie</div>
+
+    <input type="text" class="search" placeholder="Rechercher un livre..." onkeyup="searchBook(this.value)">
+
+    <!-- ADMIN -->
+    <button class="admin-btn" onclick="loginAdmin()">Admin</button>
+
+    <div class="cart">🛒 <span id="count">0</span></div>
+</header>
+
+<div class="banner">
+    <h2>🔥 Promotions en cours</h2>
+</div>
+
+<!-- RESULTAT -->
+<div class="section" id="searchResult" style="display:none;">
+    <h3>Résultat</h3>
+    <div class="books" id="resultBooks"></div>
+
+    <h3>AUTRES LIVRES DU MÊME SUJET</h3>
+    <div class="books" id="relatedBooks"></div>
+</div>
+
+<!-- ACCUEIL -->
+<div class="section" id="home">
+    <h3>Tous les livres</h3>
+    <div class="books" id="allBooks"></div>
+</div>
+
+<script>
+let cart = [];
+
+// LIVRES
+const books = [
+    {name:"Business Rapide", price:6000, category:"business", img:"https://via.placeholder.com/150"},
+    {name:"Argent avec le téléphone", price:6500, category:"business", img:"https://via.placeholder.com/150"},
+    {name:"Secrets Marketing", price:5000, category:"business", img:"https://via.placeholder.com/150"},
+    {name:"Mentalité Gagnante", price:4500, category:"motivation", img:"https://via.placeholder.com/150"},
+    {name:"Le Pouvoir Caché", price:5000, category:"motivation", img:"https://via.placeholder.com/150"},
+    {name:"Réussir en Afrique", price:5500, category:"motivation", img:"https://via.placeholder.com/150"}
+];
+
+// AFFICHAGE
+function displayBooks(list, containerId){
+    let container = document.getElementById(containerId);
+    container.innerHTML = "";
+
+    list.forEach(book=>{
+        container.innerHTML += `
+        <div class="book">
+            <img src="${book.img}">
+            <h4>${book.name}</h4>
+            <p>${book.price} FCFA</p>
+            <button onclick="addToCart('${book.name}', ${book.price})">Ajouter</button>
+            <button onclick="buyNow('${book.name}', ${book.price})">Acheter</button>
+        </div>
+        `;
+    });
+}
+
+// INITIAL
+displayBooks(books, "allBooks");
+
+// PANIER
+function addToCart(name, price){
+    cart.push({name, price});
+    document.getElementById("count").innerText = cart.length;
+}
+
+// WHATSAPP
+function buyNow(name, price){
+    let message = `Bonjour, je veux acheter ${name} à ${price} FCFA`;
+    let phone = "22665623164";
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`);
+}
+
+// RECHERCHE
+function searchBook(value){
+    value = value.toLowerCase();
+
+    if(value === ""){
+        document.getElementById("home").style.display = "block";
+        document.getElementById("searchResult").style.display = "none";
+        return;
+    }
+
+    let found = books.find(book => book.name.toLowerCase().includes(value));
+
+    if(found){
+        document.getElementById("home").style.display = "none";
+        document.getElementById("searchResult").style.display = "block";
+
+        displayBooks([found], "resultBooks");
+
+        let related = books.filter(b => b.category === found.category && b.name !== found.name);
+        displayBooks(related, "relatedBooks");
+    }
+}
+
+// ADMIN LOGIN
+function loginAdmin(){
+    let username = prompt("Nom utilisateur:");
+    let password = prompt("Code:");
+
+    if(username === "LAMINE ZALLE" && password === "LAMINE1234"){
+        alert("Connexion réussie ✅");
+    }else{
+        alert("Accès refusé ❌");
+    }
+}
+</script>
+
+</body>
+</html>
